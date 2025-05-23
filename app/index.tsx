@@ -1,4 +1,4 @@
-import { Text, View } from "react-native";
+import { StatusBar, View } from "react-native";
 
 export default function Index() {
   return (
@@ -9,10 +9,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text style={{
-        fontSize: 50,
-        fontWeight: "bold"
-      }}>Hello World</Text>
+      <StatusBar barStyle="dark-content" />
     </View>
   );
 }
