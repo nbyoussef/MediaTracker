@@ -1,11 +1,13 @@
 import { Box } from "@/components/ui/box";
 import { FormControl } from "@/components/ui/form-control";
+import { HStack } from "@/components/ui/hstack";
 import { SearchIcon } from "@/components/ui/icon";
+import { Image } from "@/components/ui/image";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import React, { useState } from "react";
-import { StatusBar, View } from "react-native";
+import { ScrollView, StatusBar } from "react-native";
 
 export default function Index() {
   const [item, setItem] = useState("");
@@ -13,7 +15,6 @@ export default function Index() {
   function searchFor(query: string) {
     const url = `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`;
     const encodedURL = encodeURI(url);
-    console.log(encodedURL);
     const options = {
       method: "GET",
       headers: {
@@ -29,7 +30,6 @@ export default function Index() {
           throw new Error(`Response status: ${response.status}`);
         }
         const results = await response.json();
-        console.log(results);
         return results;
       } catch (error) {
         let message = "Unknown Error";
@@ -38,16 +38,16 @@ export default function Index() {
       }
     }
     getData().then((json) => {
-      const results = json.results.slice(0, 5).map((e: any) => e.title);
+      const results = json.results.slice(0, 5).map((e: any) => e);
       setMovieTitles(results);
     });
   }
 
   return (
-    <View>
+    <ScrollView className="px-3">
       <StatusBar barStyle="dark-content" />
       <FormControl>
-        <Input variant="rounded" size="lg" className="mt-3 mx-3">
+        <Input variant="rounded" size="lg" className="mt-3">
           <InputSlot className="pl-3">
             <InputIcon as={SearchIcon} />
           </InputSlot>
@@ -59,27 +59,24 @@ export default function Index() {
           />
         </Input>
       </FormControl>
-      <Box className="lex justify-center items-center mt-5 px-5">
-        <VStack className="w-full" space="md" reversed={false}>
-          {/* <Box className="rounded-xl bg-stone-500 p-5">
-            <Text className="text-typography-0">Movie Title</Text>
+      <VStack className="py-5" space="md" reversed={false}>
+        {movieTitles.map((e: any, index) => (
+          <Box key={index} className="rounded-xl bg-slate-600 py-2">
+            <HStack className="" space="xs">
+              <Image
+                resizeMode="contain"
+                size="xl"
+                alt={e.title}
+                source={`https://image.tmdb.org/t/p/original${e.poster_path}`}
+              />
+              <Text
+                className="text-typography-0 font-bold flex-shrink"
+                numberOfLines={3}
+              >{`${e.title} (${e.release_date.slice(0, 4)})`}</Text>
+            </HStack>
           </Box>
-          <Box className="rounded-xl bg-stone-500 p-5">
-            <Text className="text-typography-0">Movie Title</Text>
-          </Box>
-          <Box className="rounded-xl bg-stone-500 p-5">
-            <Text className="text-typography-0">Movie Title</Text>
-          </Box>
-          <Box className="rounded-xl bg-stone-500 p-5">
-            <Text className="text-typography-0">Movie Title</Text>
-          </Box> */}
-          {movieTitles.map((e, index) => (
-            <Box key={index} className="rounded-xl bg-stone-500 p-5">
-              <Text className="text-typography-0">{e}</Text>
-            </Box>
-          ))}
-        </VStack>
-      </Box>
-    </View>
+        ))}
+      </VStack>
+    </ScrollView>
   );
 }
