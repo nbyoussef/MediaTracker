@@ -1,7 +1,7 @@
 import { Box } from "@/components/ui/box";
 import { FormControl } from "@/components/ui/form-control";
 import { HStack } from "@/components/ui/hstack";
-import { SearchIcon } from "@/components/ui/icon";
+import { CloseCircleIcon, SearchIcon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -10,8 +10,26 @@ import React, { useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
 
 export default function Index() {
-  const [item, setItem] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [movieTitles, setMovieTitles] = useState([]);
+  const [isVisible, setIsVisible] = useState(false);
+
+  //API call function
+  async function getData(encodedURL: string, options: object) {
+    try {
+      const response = await fetch(encodedURL, options);
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      const results = await response.json();
+      return results;
+    } catch (error) {
+      let message = "Unknown Error";
+      if (error instanceof Error) message = error.message;
+      console.log(message);
+    }
+  }
+
   function searchFor(query: string) {
     const url = `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`;
     const encodedURL = encodeURI(url);
@@ -23,24 +41,16 @@ export default function Index() {
           "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk",
       },
     };
-    async function getData() {
-      try {
-        const response = await fetch(encodedURL, options);
-        if (!response.ok) {
-          throw new Error(`Response status: ${response.status}`);
-        }
-        const results = await response.json();
-        return results;
-      } catch (error) {
-        let message = "Unknown Error";
-        if (error instanceof Error) message = error.message;
-        console.log(message);
-      }
-    }
-    getData().then((json) => {
+    getData(encodedURL, options).then((json) => {
       const results = json.results.slice(0, 5).map((e: any) => e);
       setMovieTitles(results);
     });
+    setIsVisible(true);
+  }
+  function clearSearch() {
+    setMovieTitles([]);
+    setSearchValue("");
+    setIsVisible(false);
   }
 
   return (
@@ -53,10 +63,15 @@ export default function Index() {
           </InputSlot>
           <InputField
             placeholder="Search"
-            value={item}
-            onChangeText={(value) => setItem(value)}
-            onSubmitEditing={() => searchFor(item)}
+            value={searchValue}
+            onChangeText={setSearchValue}
+            onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
           />
+          {isVisible && (
+            <InputSlot onPress={clearSearch}>
+              <InputIcon className="mr-3" as={CloseCircleIcon} />
+            </InputSlot>
+          )}
         </Input>
       </FormControl>
       <VStack className="py-5" space="md" reversed={false}>
