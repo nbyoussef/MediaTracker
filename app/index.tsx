@@ -1,7 +1,8 @@
 import { Box } from "@/components/ui/box";
+import { Button, ButtonIcon } from "@/components/ui/button";
 import { FormControl } from "@/components/ui/form-control";
 import { HStack } from "@/components/ui/hstack";
-import { CloseCircleIcon, SearchIcon } from "@/components/ui/icon";
+import { AddIcon, CloseCircleIcon, SearchIcon } from "@/components/ui/icon";
 import { Image } from "@/components/ui/image";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import { Text } from "@/components/ui/text";
@@ -77,7 +78,7 @@ export default function Index() {
       <VStack className="py-5" space="md" reversed={false}>
         {movieTitles.map((e: any, index) => (
           <Box key={index} className="rounded-xl bg-slate-600 py-2">
-            <HStack className="" space="xs">
+            <HStack className="flex" space="xs">
               <Image
                 resizeMode="contain"
                 size="xl"
@@ -85,9 +86,12 @@ export default function Index() {
                 source={`https://image.tmdb.org/t/p/original${e.poster_path}`}
               />
               <Text
-                className="text-typography-0 font-bold flex-shrink"
+                className="text-typography-0 font-bold flex-shrink my-auto"
                 numberOfLines={3}
               >{`${e.title} (${e.release_date.slice(0, 4)})`}</Text>
+              <Button size="md" className="my-auto ml-3">
+                <ButtonIcon as={AddIcon} />
+              </Button>
             </HStack>
           </Box>
         ))}
