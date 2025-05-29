@@ -10,13 +10,12 @@ import { ScrollView, StatusBar } from "react-native";
 
 export default function Index() {
   const [searchValue, setSearchValue] = useState("");
-  const [movieTitles, setMovieTitles] = useState([]);
-  const [watchList, setWatchList] = useState<object[]>([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [watchList, setWatchList] = useState<MovieType[]>([]);
   const [watchListVisible, setWatchListVisible] = useState(true);
-  const [isVisible, setIsVisible] = useState(false);
+  const [clearBtnVisible, setClearBtnVisible] = useState(false);
   const [searchResultsVisible, setSearchResultsVisible] = useState(false);
 
-  //API call function
   async function getData(encodedURL: string, options: object) {
     try {
       const response = await fetch(encodedURL, options);
@@ -43,24 +42,25 @@ export default function Index() {
           "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk",
       },
     };
+
     getData(encodedURL, options).then((json) => {
       const results = json.results.slice(0, 5).map((e: any) => e);
-      setMovieTitles(results);
+      setSearchResults(results);
     });
-    setIsVisible(true);
+    setClearBtnVisible(true);
     setSearchResultsVisible(true);
     setWatchListVisible(false);
   }
   function clearSearch() {
-    setMovieTitles([]);
+    setSearchResults([]);
     setSearchValue("");
-    setIsVisible(false);
+    setClearBtnVisible(false);
     setWatchListVisible(true);
   }
   function addToWatchlist(movie: MovieType) {
     setWatchList([...watchList, movie]);
     setWatchListVisible(true);
-    setIsVisible(false);
+    setClearBtnVisible(false);
     setSearchValue("");
     setSearchResultsVisible(false);
     console.log("Item added");
@@ -80,7 +80,7 @@ export default function Index() {
             onChangeText={setSearchValue}
             onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
           />
-          {isVisible && (
+          {clearBtnVisible && (
             <InputSlot onPress={clearSearch}>
               <InputIcon className="mr-3" as={CloseCircleIcon} />
             </InputSlot>
@@ -96,7 +96,7 @@ export default function Index() {
       )}
       <VStack className="py-5" space="md" reversed={false}>
         {searchResultsVisible &&
-          movieTitles.map((e: any, index) => (
+          searchResults.map((e: any, index) => (
             <MovieBox key={index} movie={e}>
               <Button
                 size="md"
