@@ -7,13 +7,7 @@ import { FormControl } from "../form-control";
 import { CloseCircleIcon, SearchIcon } from "../icon";
 import { Input, InputField, InputIcon, InputSlot } from "../input";
 
-export default function SearchBar({
-  value,
-  onChangeText,
-  onSubmitEditing,
-  onClear,
-  clearBtnVisible,
-}: {
+interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   onSubmitEditing: (
@@ -21,7 +15,15 @@ export default function SearchBar({
   ) => void;
   clearBtnVisible: boolean;
   onClear: () => void;
-}) {
+}
+
+export default function SearchBar({
+  value,
+  onChangeText,
+  onSubmitEditing,
+  onClear,
+  clearBtnVisible,
+}: SearchBarProps) {
   return (
     <FormControl>
       <Input variant="rounded" size="lg" className="mt-3">
