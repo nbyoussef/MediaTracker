@@ -1,12 +1,10 @@
-import { Box } from "@/components/ui/box";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { FormControl } from "@/components/ui/form-control";
-import { HStack } from "@/components/ui/hstack";
 import { AddIcon, CloseCircleIcon, SearchIcon } from "@/components/ui/icon";
-import { Image } from "@/components/ui/image";
 import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
-import { Text } from "@/components/ui/text";
+import MovieBox from "@/components/ui/movieBox";
 import { VStack } from "@/components/ui/vstack";
+import { MovieType } from "@/types/Movie";
 import React, { useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
 
@@ -59,6 +57,14 @@ export default function Index() {
     setIsVisible(false);
     setWatchListVisible(true);
   }
+  function addToWatchlist(movie: MovieType) {
+    setWatchList([...watchList, movie]);
+    setWatchListVisible(true);
+    setIsVisible(false);
+    setSearchValue("");
+    setSearchResultsVisible(false);
+    console.log("Item added");
+  }
 
   return (
     <ScrollView className="px-3">
@@ -84,54 +90,24 @@ export default function Index() {
       {watchListVisible && (
         <VStack className="py-5" space="md" reversed={false}>
           {watchList.map((e: any, index) => (
-            <Box key={index} className="rounded-xl bg-slate-600 py-2">
-              <HStack className="flex" space="xs">
-                <Image
-                  resizeMode="contain"
-                  size="xl"
-                  alt={e.title}
-                  source={`https://image.tmdb.org/t/p/original${e.poster_path}`}
-                />
-                <Text
-                  className="text-typography-0 font-bold flex-shrink my-auto"
-                  numberOfLines={3}
-                >{`${e.title} (${e.release_date.slice(0, 4)})`}</Text>
-              </HStack>
-            </Box>
+            <MovieBox key={index} movie={e} />
           ))}
         </VStack>
       )}
       <VStack className="py-5" space="md" reversed={false}>
         {searchResultsVisible &&
           movieTitles.map((e: any, index) => (
-            <Box key={index} className="rounded-xl bg-slate-600 py-2">
-              <HStack className="flex" space="xs">
-                <Image
-                  resizeMode="contain"
-                  size="xl"
-                  alt={e.title}
-                  source={`https://image.tmdb.org/t/p/original${e.poster_path}`}
-                />
-                <Text
-                  className="text-typography-0 font-bold flex-shrink my-auto"
-                  numberOfLines={3}
-                >{`${e.title} (${e.release_date.slice(0, 4)})`}</Text>
-                <Button
-                  size="md"
-                  className="my-auto ml-3"
-                  onPress={() => {
-                    setWatchList([...watchList, e]);
-                    setWatchListVisible(true);
-                    setIsVisible(false);
-                    setSearchValue("");
-                    setSearchResultsVisible(false);
-                    console.log("Item added");
-                  }}
-                >
-                  <ButtonIcon as={AddIcon} />
-                </Button>
-              </HStack>
-            </Box>
+            <MovieBox key={index} movie={e}>
+              <Button
+                size="md"
+                className="my-auto ml-3"
+                onPress={() => {
+                  addToWatchlist(e);
+                }}
+              >
+                <ButtonIcon as={AddIcon} />
+              </Button>
+            </MovieBox>
           ))}
       </VStack>
     </ScrollView>
