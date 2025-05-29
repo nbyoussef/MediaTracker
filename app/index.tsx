@@ -65,6 +65,9 @@ export default function Index() {
     setSearchResultsVisible(false);
     console.log("Item added");
   }
+  function removeFromWatchlist(movie: MovieType) {
+    setWatchList(watchList.filter((e) => e.id !== movie.id));
+  }
 
   return (
     <ScrollView className="px-3">
@@ -90,7 +93,17 @@ export default function Index() {
       {watchListVisible && (
         <VStack className="py-5" space="md" reversed={false}>
           {watchList.map((e: any, index) => (
-            <MovieBox key={index} movie={e} />
+            <MovieBox key={index} movie={e}>
+              <Button
+                size="md"
+                className="my-auto ml-3 bg-red-600"
+                onPress={() => {
+                  removeFromWatchlist(e);
+                }}
+              >
+                <ButtonIcon as={CloseCircleIcon} />
+              </Button>
+            </MovieBox>
           ))}
         </VStack>
       )}
