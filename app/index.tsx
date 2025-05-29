@@ -5,6 +5,7 @@ import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import MovieBox from "@/components/ui/movieBox";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
+import { RequestOptions } from "@/types/RequestOptions";
 import React, { useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
 
@@ -16,7 +17,7 @@ export default function Index() {
   const [clearBtnVisible, setClearBtnVisible] = useState(false);
   const [searchResultsVisible, setSearchResultsVisible] = useState(false);
 
-  async function getData(encodedURL: string, options: object) {
+  async function getData(encodedURL: string, options: RequestOptions) {
     try {
       const response = await fetch(encodedURL, options);
       if (!response.ok) {
