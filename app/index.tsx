@@ -5,7 +5,6 @@ import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import MovieBox from "@/components/ui/movieBox";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
-import { RequestOptions } from "@/types/RequestOptions";
 import React, { useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
 
@@ -24,33 +23,12 @@ export default function Index() {
   const [searchResultsVisible, setSearchResultsVisible] = useState(false);
 
   /**
-   * Helper function to fetch data from a given URL using fetch API
-   * @param encodedURL - URL to fetch (should be URI-encoded)
-   * @param options - Request options for fetch (method, headers, etc.)
-   * @returns The parsed JSON response, or logs the error
-   */
-  async function getData(encodedURL: string, options: RequestOptions) {
-    try {
-      const response = await fetch(encodedURL, options);
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      const results = await response.json();
-      return results;
-    } catch (error) {
-      let message = "Unknown Error";
-      if (error instanceof Error) message = error.message;
-      console.log(message);
-    }
-  }
-
-  /**
    * Calls the TMDB API to search for movies matching the query
    * Updates the searchResults state with the first 5 results
    * Also updates visibility states for UI elements
    * @param query - The search string entered by the user
    */
-  function searchFor(query: string) {
+  async function searchFor(query: string) {
     // Construct the API URL for searching movies
     const url = `${SEARCH_API_URL}}&query=${encodeURIComponent(query)}`;
     const options = {
@@ -60,12 +38,15 @@ export default function Index() {
         Authorization: TMDB_AUTH_TOKEN,
       },
     };
-
-    // Fetch data and update search results
-    getData(url, options).then((json) => {
-      const results = json.results.slice(0, 5).map((e: any) => e);
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) throw new Error(`Response status: ${response.status}`);
+      const json = await response.json();
+      const results = json.results.slice(0, 5);
       setSearchResults(results);
-    });
+    } catch (error) {
+      console.error(error instanceof Error ? error.message : "Unknown Error");
+    }
 
     // Show clear button and search results, hide watchlist
     setClearBtnVisible(true);
