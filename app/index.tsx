@@ -18,9 +18,6 @@ export default function Index() {
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
   const [watchList, setWatchList] = useState<MovieType[]>([]);
-  const [watchListVisible, setWatchListVisible] = useState(true);
-  const [clearBtnVisible, setClearBtnVisible] = useState(false);
-  const [searchResultsVisible, setSearchResultsVisible] = useState(false);
 
   /**
    * Calls the TMDB API to search for movies matching the query
@@ -28,7 +25,7 @@ export default function Index() {
    * Also updates visibility states for UI elements
    * @param query - The search string entered by the user
    */
-  async function searchFor(query: string) {
+  const searchFor = async (query: string) => {
     // Construct the API URL for searching movies
     const url = `${SEARCH_API_URL}}&query=${encodeURIComponent(query)}`;
     const options = {
@@ -47,43 +44,54 @@ export default function Index() {
     } catch (error) {
       console.error(error instanceof Error ? error.message : "Unknown Error");
     }
-
-    // Show clear button and search results, hide watchlist
-    setClearBtnVisible(true);
-    setSearchResultsVisible(true);
-    setWatchListVisible(false);
-  }
+  };
 
   /**
    * Clears the search input and results, makes the watchlist visible again
    */
-  function clearSearch() {
+  const clearSearch = () => {
     setSearchResults([]);
     setSearchValue("");
-    setClearBtnVisible(false);
-    setWatchListVisible(true);
-  }
+  };
 
   /**
    * Adds a movie to the watchlist and resets UI states related to search
    * @param movie - MovieType object to add to the watchlist
    */
-  function addToWatchlist(movie: MovieType) {
+  const addToWatchlist = (movie: MovieType) => {
     setWatchList([...watchList, movie]);
-    setWatchListVisible(true);
-    setClearBtnVisible(false);
     setSearchValue("");
-    setSearchResultsVisible(false);
+    setSearchResults([]);
     console.log("Item added");
-  }
+  };
 
-  /**
-   * Removes a movie from the watchlist by filtering it out by ID
-   * @param movie - MovieType object to remove from the watchlist
-   */
-  function removeFromWatchlist(movie: MovieType) {
-    setWatchList(watchList.filter((e) => e.id !== movie.id));
-  }
+  const renderedSearchResults = searchResults.map((e: any, index) => (
+    <MovieBox key={index} movie={e}>
+      <Button
+        size="md"
+        className="my-auto ml-3"
+        onPress={() => {
+          addToWatchlist(e);
+        }}
+      >
+        <ButtonIcon as={AddIcon} />
+      </Button>
+    </MovieBox>
+  ));
+
+  const renderedWatchlist = watchList.map((e: any, index) => (
+    <MovieBox key={index} movie={e}>
+      <Button
+        size="md"
+        className="my-auto ml-3 bg-red-600"
+        onPress={() => {
+          setWatchList(watchList.filter((movie) => movie.id !== e.id));
+        }}
+      >
+        <ButtonIcon as={CloseCircleIcon} />
+      </Button>
+    </MovieBox>
+  ));
 
   return (
     <ScrollView className="px-3">
@@ -102,49 +110,16 @@ export default function Index() {
             onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
           />
           {/* Show clear button when there is text to clear */}
-          {clearBtnVisible && (
+          {searchResults.length != 0 && (
             <InputSlot onPress={clearSearch}>
               <InputIcon className="mr-3" as={CloseCircleIcon} />
             </InputSlot>
           )}
         </Input>
       </FormControl>
-
-      {/* Watchlist: Shown when watchListVisible is true */}
-      {watchListVisible && (
-        <VStack className="py-5" space="md" reversed={false}>
-          {watchList.map((e: any, index) => (
-            <MovieBox key={index} movie={e}>
-              <Button
-                size="md"
-                className="my-auto ml-3 bg-red-600"
-                onPress={() => {
-                  removeFromWatchlist(e);
-                }}
-              >
-                <ButtonIcon as={CloseCircleIcon} />
-              </Button>
-            </MovieBox>
-          ))}
-        </VStack>
-      )}
-
-      {/* Search Results: Shown when searchResultsVisible is true */}
+      {/* If no searchResults display watchlist */}
       <VStack className="py-5" space="md" reversed={false}>
-        {searchResultsVisible &&
-          searchResults.map((e: any, index) => (
-            <MovieBox key={index} movie={e}>
-              <Button
-                size="md"
-                className="my-auto ml-3"
-                onPress={() => {
-                  addToWatchlist(e);
-                }}
-              >
-                <ButtonIcon as={AddIcon} />
-              </Button>
-            </MovieBox>
-          ))}
+        {searchResults.length == 0 ? renderedWatchlist : renderedSearchResults}
       </VStack>
     </ScrollView>
   );
