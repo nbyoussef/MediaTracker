@@ -9,6 +9,12 @@ import { RequestOptions } from "@/types/RequestOptions";
 import React, { useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
 
+const TMDB_AUTH_TOKEN =
+  "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk";
+
+const SEARCH_API_URL =
+  "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1";
+
 export default function Index() {
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState([]);
@@ -46,19 +52,17 @@ export default function Index() {
    */
   function searchFor(query: string) {
     // Construct the API URL for searching movies
-    const url = `https://api.themoviedb.org/3/search/movie?query=${query}&include_adult=false&language=en-US&page=1`;
-    const encodedURL = encodeURI(url);
+    const url = `${SEARCH_API_URL}}&query=${encodeURIComponent(query)}`;
     const options = {
       method: "GET",
       headers: {
         accept: "application/json",
-        Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk",
+        Authorization: TMDB_AUTH_TOKEN,
       },
     };
 
     // Fetch data and update search results
-    getData(encodedURL, options).then((json) => {
+    getData(url, options).then((json) => {
       const results = json.results.slice(0, 5).map((e: any) => e);
       setSearchResults(results);
     });
