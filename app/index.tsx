@@ -1,8 +1,7 @@
 import { Button, ButtonIcon } from "@/components/ui/button";
-import { FormControl } from "@/components/ui/form-control";
-import { AddIcon, CloseCircleIcon, SearchIcon } from "@/components/ui/icon";
-import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
+import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
 import MovieBox from "@/components/ui/movieBox";
+import SearchBar from "@/components/ui/search-bar";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
 import React, { useState } from "react";
@@ -98,25 +97,14 @@ export default function Index() {
       {/* Sets the status bar style */}
       <StatusBar barStyle="dark-content" />
       {/* Search input with clear button */}
-      <FormControl>
-        <Input variant="rounded" size="lg" className="mt-3">
-          <InputSlot className="pl-3">
-            <InputIcon as={SearchIcon} />
-          </InputSlot>
-          <InputField
-            placeholder="Search"
-            value={searchValue}
-            onChangeText={setSearchValue}
-            onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
-          />
-          {/* Show clear button when there is text to clear */}
-          {searchResults.length != 0 && (
-            <InputSlot onPress={clearSearch}>
-              <InputIcon className="mr-3" as={CloseCircleIcon} />
-            </InputSlot>
-          )}
-        </Input>
-      </FormControl>
+      <SearchBar
+        value={searchValue}
+        onChangeText={setSearchValue}
+        onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
+        clearBtnVisible={searchResults.length != 0}
+        onClear={clearSearch}
+      />
+
       {/* If no searchResults display watchlist */}
       <VStack className="py-5" space="md" reversed={false}>
         {searchResults.length == 0 ? renderedWatchlist : renderedSearchResults}
