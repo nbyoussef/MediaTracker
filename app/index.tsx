@@ -4,7 +4,7 @@ import MovieBox from "@/components/ui/movieBox";
 import SearchBar from "@/components/ui/search-bar";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
 
 const TMDB_AUTH_TOKEN =
@@ -48,50 +48,59 @@ export default function Index() {
   /**
    * Clears the search input and results, makes the watchlist visible again
    */
-  const clearSearch = () => {
+  const clearSearch = useCallback(() => {
     setSearchResults([]);
     setSearchValue("");
-  };
+  }, []);
 
   /**
    * Adds a movie to the watchlist and resets UI states related to search
    * @param movie - MovieType object to add to the watchlist
    */
-  const addToWatchlist = (movie: MovieType) => {
-    if (!watchList.some((m) => m.id === movie.id)) {
-      setWatchList([...watchList, movie]);
-    }
-    setSearchValue("");
-    setSearchResults([]);
-  };
+  const addToWatchlist = useCallback(
+    (movie: MovieType) => {
+      if (!watchList.some((m) => m.id === movie.id)) {
+        setWatchList([...watchList, movie]);
+      }
+      setSearchValue("");
+      setSearchResults([]);
+    },
+    [watchList]
+  );
 
-  const renderedSearchResults = searchResults.map((movie, index) => (
-    <MovieBox key={index} movie={movie}>
-      <Button
-        size="md"
-        className="my-auto ml-3"
-        onPress={() => {
-          addToWatchlist(movie);
-        }}
-      >
-        <ButtonIcon as={AddIcon} />
-      </Button>
-    </MovieBox>
-  ));
+  const renderedSearchResults = useMemo(
+    () =>
+      searchResults.map((movie, index) => (
+        <MovieBox key={index} movie={movie}>
+          <Button
+            size="md"
+            className="my-auto ml-3"
+            onPress={() => addToWatchlist(movie)}
+          >
+            <ButtonIcon as={AddIcon} />
+          </Button>
+        </MovieBox>
+      )),
+    [searchResults]
+  );
 
-  const renderedWatchlist = watchList.map((movie, index) => (
-    <MovieBox key={index} movie={movie}>
-      <Button
-        size="md"
-        className="my-auto ml-3 bg-red-600"
-        onPress={() => {
-          setWatchList(watchList.filter((m) => m.id !== movie.id));
-        }}
-      >
-        <ButtonIcon as={CloseCircleIcon} />
-      </Button>
-    </MovieBox>
-  ));
+  const renderedWatchlist = useMemo(
+    () =>
+      watchList.map((movie, index) => (
+        <MovieBox key={index} movie={movie}>
+          <Button
+            size="md"
+            className="my-auto ml-3 bg-red-600"
+            onPress={() => {
+              setWatchList(watchList.filter((m) => m.id !== movie.id));
+            }}
+          >
+            <ButtonIcon as={CloseCircleIcon} />
+          </Button>
+        </MovieBox>
+      )),
+    [watchList]
+  );
 
   return (
     <ScrollView className="px-3">
