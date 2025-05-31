@@ -18,7 +18,7 @@ export default function MovieBox({ movie, children }: MovieBoxProps) {
           resizeMode="contain"
           size="xl"
           alt={movie.title}
-          source={`https://image.tmdb.org/t/p/original${movie.poster_path}`}
+          source={`https://image.tmdb.org/t/p/w154${movie.poster_path}`}
         />
         <Text
           className="text-typography-0 font-bold flex-shrink my-auto"
