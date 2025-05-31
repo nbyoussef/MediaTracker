@@ -38,7 +38,12 @@ export default function Index() {
       const response = await fetch(url, options);
       if (!response.ok) throw new Error(`Response status: ${response.status}`);
       const json = await response.json();
-      const results = json.results.slice(0, 5);
+      const results = json.results.slice(0, 5).map((movie: MovieType) => ({
+        id: movie.id,
+        title: movie.title,
+        poster_path: movie.poster_path,
+        release_date: movie.release_date,
+      }));
       setSearchResults(results);
     } catch (error) {
       console.error(error instanceof Error ? error.message : "Unknown Error");
@@ -71,7 +76,7 @@ export default function Index() {
   const renderedSearchResults = useMemo(
     () =>
       searchResults.map((movie, index) => (
-        <MovieBox key={index} movie={movie}>
+        <MovieBox key={`${movie.id}/${index}/search`} movie={movie}>
           <Button
             size="md"
             className="my-auto ml-3"
@@ -87,7 +92,7 @@ export default function Index() {
   const renderedWatchlist = useMemo(
     () =>
       watchList.map((movie, index) => (
-        <MovieBox key={index} movie={movie}>
+        <MovieBox key={`${movie.id}/${index}/watchList`} movie={movie}>
           <Button
             size="md"
             className="my-auto ml-3 bg-red-600"
@@ -116,7 +121,7 @@ export default function Index() {
       />
 
       {/* If no searchResults display watchlist */}
-      <VStack className="py-5" space="md" reversed={false}>
+      <VStack className="mt-3" space="md" reversed={false}>
         {searchResults.length == 0 ? renderedWatchlist : renderedSearchResults}
       </VStack>
     </ScrollView>
