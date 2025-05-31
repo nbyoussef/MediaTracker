@@ -6,12 +6,12 @@ import React from "react";
 
 export default function RootLayout() {
   return (
-    <GluestackUIProvider mode="light">
+    <GluestackUIProvider>
       <Stack>
         <Stack.Screen
           name="index"
           options={{
-            title: "Media Tracker",
+            title: "Movies Watchlist",
           }}
         />
       </Stack>
