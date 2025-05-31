@@ -15,7 +15,7 @@ const SEARCH_API_URL =
 
 export default function Index() {
   const [searchValue, setSearchValue] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
+  const [searchResults, setSearchResults] = useState<MovieType[]>([]);
   const [watchList, setWatchList] = useState<MovieType[]>([]);
 
   /**
@@ -26,7 +26,7 @@ export default function Index() {
    */
   const searchFor = async (query: string) => {
     // Construct the API URL for searching movies
-    const url = `${SEARCH_API_URL}}&query=${encodeURIComponent(query)}`;
+    const url = `${SEARCH_API_URL}&query=${encodeURIComponent(query)}`;
     const options = {
       method: "GET",
       headers: {
@@ -58,19 +58,20 @@ export default function Index() {
    * @param movie - MovieType object to add to the watchlist
    */
   const addToWatchlist = (movie: MovieType) => {
-    setWatchList([...watchList, movie]);
+    if (!watchList.some((m) => m.id === movie.id)) {
+      setWatchList([...watchList, movie]);
+    }
     setSearchValue("");
     setSearchResults([]);
-    console.log("Item added");
   };
 
-  const renderedSearchResults = searchResults.map((e: any, index) => (
-    <MovieBox key={index} movie={e}>
+  const renderedSearchResults = searchResults.map((movie, index) => (
+    <MovieBox key={index} movie={movie}>
       <Button
         size="md"
         className="my-auto ml-3"
         onPress={() => {
-          addToWatchlist(e);
+          addToWatchlist(movie);
         }}
       >
         <ButtonIcon as={AddIcon} />
@@ -78,13 +79,13 @@ export default function Index() {
     </MovieBox>
   ));
 
-  const renderedWatchlist = watchList.map((e: any, index) => (
-    <MovieBox key={index} movie={e}>
+  const renderedWatchlist = watchList.map((movie, index) => (
+    <MovieBox key={index} movie={movie}>
       <Button
         size="md"
         className="my-auto ml-3 bg-red-600"
         onPress={() => {
-          setWatchList(watchList.filter((movie) => movie.id !== e.id));
+          setWatchList(watchList.filter((m) => m.id !== movie.id));
         }}
       >
         <ButtonIcon as={CloseCircleIcon} />
