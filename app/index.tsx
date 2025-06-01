@@ -1,11 +1,14 @@
 import { Button, ButtonIcon } from "@/components/ui/button";
+import { Center } from "@/components/ui/center";
 import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
 import MovieBox from "@/components/ui/movieBox";
 import SearchBar from "@/components/ui/search-bar";
+import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
 import React, { useCallback, useMemo, useState } from "react";
 import { ScrollView, StatusBar } from "react-native";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
 const TMDB_AUTH_TOKEN =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk";
@@ -70,7 +73,7 @@ export default function Index() {
       setSearchValue("");
       setSearchResults([]);
     },
-    [watchList]
+    [watchList],
   );
 
   const renderedSearchResults = useMemo(
@@ -86,7 +89,7 @@ export default function Index() {
           </Button>
         </MovieBox>
       )),
-    [searchResults]
+    [searchResults],
   );
 
   const renderedWatchlist = useMemo(
@@ -104,26 +107,35 @@ export default function Index() {
           </Button>
         </MovieBox>
       )),
-    [watchList]
+    [watchList],
   );
 
   return (
-    <ScrollView className="px-3">
-      {/* Sets the status bar style */}
-      <StatusBar barStyle="dark-content" />
-      {/* Search input with clear button */}
-      <SearchBar
-        value={searchValue}
-        onChangeText={setSearchValue}
-        onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
-        clearBtnVisible={searchResults.length != 0}
-        onClear={clearSearch}
-      />
+    <SafeAreaProvider>
+      <ScrollView className="flex flex-col px-3">
+        {/* Search input with clear button */}
+        <SearchBar
+          value={searchValue}
+          onChangeText={setSearchValue}
+          onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
+          clearBtnVisible={searchResults.length != 0}
+          onClear={clearSearch}
+        />
 
-      {/* If no searchResults display watchlist */}
-      <VStack className="mt-3" space="md" reversed={false}>
-        {searchResults.length == 0 ? renderedWatchlist : renderedSearchResults}
-      </VStack>
-    </ScrollView>
+        {/* If no searchResults display watchlist */}
+        {searchResults.length == 0 && watchList.length == 0 && (
+          <Center className="grow basis-full">
+            <Text>Search to add movies</Text>
+          </Center>
+        )}
+        <VStack space="md">
+          {searchResults.length == 0
+            ? renderedWatchlist
+            : renderedSearchResults}
+        </VStack>
+        {/* Sets the status bar style */}
+        <StatusBar barStyle="dark-content" />
+      </ScrollView>
+    </SafeAreaProvider>
   );
 }

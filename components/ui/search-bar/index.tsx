@@ -11,7 +11,7 @@ interface SearchBarProps {
   value: string;
   onChangeText: (text: string) => void;
   onSubmitEditing: (
-    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
+    event: NativeSyntheticEvent<TextInputSubmitEditingEventData>,
   ) => void;
   clearBtnVisible: boolean;
   onClear: () => void;
@@ -25,8 +25,8 @@ export default function SearchBar({
   clearBtnVisible,
 }: SearchBarProps) {
   return (
-    <FormControl>
-      <Input variant="rounded" size="lg" className="mt-3">
+    <FormControl className="my-3 flex-none">
+      <Input variant="rounded" size="lg">
         <InputSlot className="pl-3">
           <InputIcon as={SearchIcon} />
         </InputSlot>
