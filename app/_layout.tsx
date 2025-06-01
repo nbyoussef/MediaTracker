@@ -8,12 +8,7 @@ export default function RootLayout() {
   return (
     <GluestackUIProvider>
       <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            title: "Movies Watchlist",
-          }}
-        />
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack>
     </GluestackUIProvider>
   );
