@@ -3,16 +3,13 @@ import { CloseCircleIcon } from "@/components/ui/icon";
 import MovieBox from "@/components/ui/movieBox";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
+import { StatusBar } from "expo-status-bar";
 import React, { useMemo, useState } from "react";
-import { ScrollView, StatusBar } from "react-native";
+import { ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Index() {
   const [watchList, setWatchList] = useState<MovieType[]>([]);
-
-  /**
-   * Adds a movie to the watchlist and resets UI states related to search
-   * @param movie - MovieType object to add to the watchlist
-   */
 
   const renderedWatchlist = useMemo(
     () =>
@@ -29,17 +26,17 @@ export default function Index() {
           </Button>
         </MovieBox>
       )),
-    [watchList]
+    [watchList],
   );
 
   return (
-    <ScrollView className="px-3">
-      {/* Sets the status bar style */}
-      <StatusBar barStyle="dark-content" />
-      {/* If no searchResults display watchlist */}
-      <VStack className="mt-3" space="md" reversed={false}>
-        {renderedWatchlist}
-      </VStack>
-    </ScrollView>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView className="px-3">
+        <VStack className="mt-3" space="md" reversed={false}>
+          {renderedWatchlist}
+        </VStack>
+        <StatusBar style="dark" />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
