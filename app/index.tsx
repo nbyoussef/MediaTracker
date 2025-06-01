@@ -1,11 +1,11 @@
 import { Button, ButtonIcon } from "@/components/ui/button";
-import { AddIcon } from "@/components/ui/icon";
+import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
 import MovieBox from "@/components/ui/movieBox";
 import SearchBar from "@/components/ui/search-bar";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
 import React, { useCallback, useMemo, useState } from "react";
-import { ScrollView } from "react-native";
+import { ScrollView, StatusBar } from "react-native";
 
 const TMDB_AUTH_TOKEN =
   "Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk";
@@ -13,10 +13,11 @@ const TMDB_AUTH_TOKEN =
 const SEARCH_API_URL =
   "https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1";
 
-export default function Tab() {
-  const [watchList, setWatchList] = useState<MovieType[]>([]);
+export default function Index() {
   const [searchValue, setSearchValue] = useState("");
   const [searchResults, setSearchResults] = useState<MovieType[]>([]);
+  const [watchList, setWatchList] = useState<MovieType[]>([]);
+
   /**
    * Calls the TMDB API to search for movies matching the query
    * Updates the searchResults state with the first 5 results
@@ -56,21 +57,11 @@ export default function Tab() {
     setSearchResults([]);
     setSearchValue("");
   }, []);
-  const renderedSearchResults = useMemo(
-    () =>
-      searchResults.map((movie, index) => (
-        <MovieBox key={`${movie.id}/${index}/search`} movie={movie}>
-          <Button
-            size="md"
-            className="my-auto ml-3"
-            // onPress={() => addToWatchlist(movie)}
-          >
-            <ButtonIcon as={AddIcon} />
-          </Button>
-        </MovieBox>
-      )),
-    [searchResults]
-  );
+
+  /**
+   * Adds a movie to the watchlist and resets UI states related to search
+   * @param movie - MovieType object to add to the watchlist
+   */
   const addToWatchlist = useCallback(
     (movie: MovieType) => {
       if (!watchList.some((m) => m.id === movie.id)) {
@@ -81,8 +72,46 @@ export default function Tab() {
     },
     [watchList]
   );
+
+  const renderedSearchResults = useMemo(
+    () =>
+      searchResults.map((movie, index) => (
+        <MovieBox key={`${movie.id}/${index}/search`} movie={movie}>
+          <Button
+            size="md"
+            className="my-auto ml-3"
+            onPress={() => addToWatchlist(movie)}
+          >
+            <ButtonIcon as={AddIcon} />
+          </Button>
+        </MovieBox>
+      )),
+    [searchResults]
+  );
+
+  const renderedWatchlist = useMemo(
+    () =>
+      watchList.map((movie, index) => (
+        <MovieBox key={`${movie.id}/${index}/watchList`} movie={movie}>
+          <Button
+            size="md"
+            className="my-auto ml-3 bg-red-600"
+            onPress={() => {
+              setWatchList(watchList.filter((m) => m.id !== movie.id));
+            }}
+          >
+            <ButtonIcon as={CloseCircleIcon} />
+          </Button>
+        </MovieBox>
+      )),
+    [watchList]
+  );
+
   return (
     <ScrollView className="px-3">
+      {/* Sets the status bar style */}
+      <StatusBar barStyle="dark-content" />
+      {/* Search input with clear button */}
       <SearchBar
         value={searchValue}
         onChangeText={setSearchValue}
@@ -90,8 +119,10 @@ export default function Tab() {
         clearBtnVisible={searchResults.length != 0}
         onClear={clearSearch}
       />
-      <VStack className="mt-3" space="md">
-        {renderedSearchResults}
+
+      {/* If no searchResults display watchlist */}
+      <VStack className="mt-3" space="md" reversed={false}>
+        {searchResults.length == 0 ? renderedWatchlist : renderedSearchResults}
       </VStack>
     </ScrollView>
   );
