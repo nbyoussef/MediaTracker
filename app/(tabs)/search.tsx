@@ -69,7 +69,7 @@ export default function Tab() {
           </Button>
         </MovieBox>
       )),
-    [searchResults],
+    [searchResults]
   );
   const addToWatchlist = useCallback(
     (movie: MovieType) => {
@@ -79,7 +79,7 @@ export default function Tab() {
       setSearchValue("");
       setSearchResults([]);
     },
-    [watchList],
+    [watchList]
   );
   return (
     <ScrollView className="px-3">
