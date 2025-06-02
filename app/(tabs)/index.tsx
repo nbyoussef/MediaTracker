@@ -1,7 +1,7 @@
+import MovieBox from "@/components/movieBox";
+import SearchBar from "@/components/search-bar";
 import { Button, ButtonIcon } from "@/components/ui/button";
 import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
-import MovieBox from "@/components/ui/movieBox";
-import SearchBar from "@/components/ui/search-bar";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";

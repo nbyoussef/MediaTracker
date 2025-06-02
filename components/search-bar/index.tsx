@@ -1,11 +1,11 @@
+import { FormControl } from "@/components/ui/form-control";
+import { CloseCircleIcon, SearchIcon } from "@/components/ui/icon";
+import { Input, InputField, InputIcon, InputSlot } from "@/components/ui/input";
 import React from "react";
 import {
 	NativeSyntheticEvent,
 	TextInputSubmitEditingEventData,
 } from "react-native";
-import { FormControl } from "../form-control";
-import { CloseCircleIcon, SearchIcon } from "../icon";
-import { Input, InputField, InputIcon, InputSlot } from "../input";
 
 interface SearchBarProps {
 	value: string;
