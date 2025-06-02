@@ -6,7 +6,7 @@ import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import { MovieType } from "@/types/Movie";
 import React, { useCallback, useMemo, useState } from "react";
-import { ScrollView, StatusBar } from "react-native";
+import { SafeAreaView, ScrollView, StatusBar } from "react-native";
 
 const TMDB_AUTH_TOKEN =
 	"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk";
@@ -109,24 +109,28 @@ export default function Index() {
 	);
 
 	return (
-		<ScrollView contentContainerClassName="flex-grow px-3">
-			{/* Search input with clear button */}
-			<SearchBar
-				value={searchValue}
-				onChangeText={setSearchValue}
-				onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
-				clearBtnVisible={searchResults.length != 0}
-				onClear={clearSearch}
-			/>
-			{searchResults.length == 0 && watchList.length == 0 && (
-				<Text className="m-auto">Search to add movies</Text>
-			)}
-			{/* If no searchResults display watchlist */}
-			<VStack space="md">
-				{searchResults.length == 0 ? renderedWatchlist : renderedSearchResults}
-			</VStack>
-			{/* Sets the status bar style */}
-			<StatusBar barStyle="dark-content" />
-		</ScrollView>
+		<SafeAreaView>
+			<ScrollView contentContainerClassName="flex-grow h-full px-3">
+				{/* Search input with clear button */}
+				<SearchBar
+					value={searchValue}
+					onChangeText={setSearchValue}
+					onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
+					clearBtnVisible={searchResults.length != 0}
+					onClear={clearSearch}
+				/>
+				{searchResults.length == 0 && watchList.length == 0 && (
+					<Text className="m-auto">Search to add movies</Text>
+				)}
+				{/* If no searchResults display watchlist */}
+				<VStack space="md">
+					{searchResults.length == 0
+						? renderedWatchlist
+						: renderedSearchResults}
+				</VStack>
+				{/* Sets the status bar style */}
+				<StatusBar barStyle="dark-content" />
+			</ScrollView>
+		</SafeAreaView>
 	);
 }

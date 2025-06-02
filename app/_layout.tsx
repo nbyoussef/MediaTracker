@@ -5,16 +5,17 @@ import "@/global.css";
 import React from "react";
 
 export default function RootLayout() {
-  return (
-    <GluestackUIProvider>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            title: "Movies Watchlist",
-          }}
-        />
-      </Stack>
-    </GluestackUIProvider>
-  );
+	return (
+		<GluestackUIProvider>
+			<Stack>
+				<Stack.Screen
+					name="(tabs)"
+					options={{
+						headerShown: false,
+					}}
+				/>
+				<Stack.Screen name="movies/[id]" options={{ headerShown: false }} />
+			</Stack>
+		</GluestackUIProvider>
+	);
 }
