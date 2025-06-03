@@ -6,26 +6,26 @@ import { MovieType } from "@/types/Movie";
 import React, { ReactNode } from "react";
 
 interface MovieBoxProps {
-  movie: MovieType;
-  children?: ReactNode;
+	movie: MovieType;
+	children?: ReactNode;
 }
 
 export default function MovieBox({ movie, children }: MovieBoxProps) {
-  return (
-    <Box className="rounded-xl bg-slate-600 py-2">
-      <HStack className="flex" space="xs">
-        <Image
-          resizeMode="contain"
-          size="xl"
-          alt={movie.title}
-          source={`https://image.tmdb.org/t/p/w154${movie.poster_path}`}
-        />
-        <Text
-          className="text-typography-0 font-bold flex-shrink my-auto"
-          numberOfLines={3}
-        >{`${movie.title} (${movie.release_date.slice(0, 4)})`}</Text>
-        {children}
-      </HStack>
-    </Box>
-  );
+	return (
+		<Box className="rounded-xl bg-slate-600 py-2">
+			<HStack className="flex" space="xs">
+				<Image
+					resizeMode="contain"
+					size="xl"
+					alt={movie.title}
+					source={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+				/>
+				<Text
+					className="text-typography-0 font-bold flex-shrink my-auto"
+					numberOfLines={3}
+				>{`${movie.title} (${movie.release_date.slice(0, 4)})`}</Text>
+				{children}
+			</HStack>
+		</Box>
+	);
 }
