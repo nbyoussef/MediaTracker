@@ -5,15 +5,10 @@ import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
 import watchlistReducer from "@/reducers/watchlistReducer";
+import { fetchMovies } from "@/services/api";
 import { MovieType } from "@/types/Movie";
 import React, { useCallback, useMemo, useReducer, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar } from "react-native";
-
-const TMDB_AUTH_TOKEN =
-	"Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI0YWFkNjNiMDE3YmFmNzM4YjkwZWMzMjA1MDFjMTg5YSIsIm5iZiI6MTc0ODE1MjYzNi43MTYsInN1YiI6IjY4MzJiMTNjMDhiNTkwN2NkODcyZjhhZSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.MmbAuIZ--mbh0ySRXwL5zsSS4mtjcal9boGm6oinbJk";
-
-const SEARCH_API_URL =
-	"https://api.themoviedb.org/3/search/movie?include_adult=false&language=en-US&page=1";
 
 export default function Index() {
 	const [searchValue, setSearchValue] = useState("");
@@ -33,6 +28,7 @@ export default function Index() {
 			movieID: id,
 		});
 	}
+
 	/**
 	 * Calls the TMDB API to search for movies matching the query
 	 * Updates the searchResults state with the first 5 results
@@ -40,29 +36,14 @@ export default function Index() {
 	 * @param query - The search string entered by the user
 	 */
 	const searchFor = async (query: string) => {
-		// Construct the API URL for searching movies
-		const url = `${SEARCH_API_URL}&query=${encodeURIComponent(query)}`;
-		const options = {
-			method: "GET",
-			headers: {
-				accept: "application/json",
-				Authorization: TMDB_AUTH_TOKEN,
-			},
-		};
-		try {
-			const response = await fetch(url, options);
-			if (!response.ok) throw new Error(`Response status: ${response.status}`);
-			const json = await response.json();
-			const results = json.results.slice(0, 5).map((movie: MovieType) => ({
-				id: movie.id,
-				title: movie.title,
-				poster_path: movie.poster_path,
-				release_date: movie.release_date,
-			}));
-			setSearchResults(results);
-		} catch (error) {
-			console.error(error instanceof Error ? error.message : "Unknown Error");
-		}
+		const results = await fetchMovies({ query });
+		const firstFiveResults = results.slice(0, 5).map((movie: MovieType) => ({
+			id: movie.id,
+			title: movie.title,
+			poster_path: movie.poster_path,
+			release_date: movie.release_date,
+		}));
+		setSearchResults(firstFiveResults);
 	};
 
 	/**
@@ -134,7 +115,7 @@ export default function Index() {
 					onClear={clearSearch}
 				/>
 				{searchResults.length == 0 && watchlist.length == 0 && (
-					<Text className="m-auto">Search to add movies</Text>
+					<Text className="m-auto font-bold text-xl">Search to add movies</Text>
 				)}
 				{/* If no searchResults display watchlist */}
 				<VStack space="md">
