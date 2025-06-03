@@ -8,13 +8,15 @@ import {
 } from "react-native";
 
 interface SearchBarProps {
-	value: string;
-	onChangeText: (text: string) => void;
-	onSubmitEditing: (
+	value?: string;
+	onChangeText?: (text: string) => void;
+	onSubmitEditing?: (
 		event: NativeSyntheticEvent<TextInputSubmitEditingEventData>
 	) => void;
-	clearBtnVisible: boolean;
-	onClear: () => void;
+	clearBtnVisible?: boolean;
+	onClear?: () => void;
+	onPress?: () => void;
+	placeholder?: string;
 }
 
 export default function SearchBar({
@@ -22,7 +24,9 @@ export default function SearchBar({
 	onChangeText,
 	onSubmitEditing,
 	onClear,
+	onPress,
 	clearBtnVisible,
+	placeholder,
 }: SearchBarProps) {
 	return (
 		<FormControl className="my-3 w-full">
@@ -31,9 +35,10 @@ export default function SearchBar({
 					<InputIcon as={SearchIcon} />
 				</InputSlot>
 				<InputField
-					placeholder="Search"
+					placeholder={placeholder}
 					value={value}
 					onChangeText={onChangeText}
+					onPress={onPress}
 					onSubmitEditing={onSubmitEditing}
 				/>
 				{clearBtnVisible && (

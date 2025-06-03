@@ -109,6 +109,7 @@ export default function Search() {
 				{/* Search input with clear button */}
 				<SearchBar
 					value={searchValue}
+					placeholder="Search for a movie"
 					onChangeText={setSearchValue}
 					onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
 					clearBtnVisible={searchResults.length != 0}
