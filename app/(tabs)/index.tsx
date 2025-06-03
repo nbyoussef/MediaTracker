@@ -4,8 +4,9 @@ import { Button, ButtonIcon } from "@/components/ui/button";
 import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
 import { VStack } from "@/components/ui/vstack";
+import watchlistReducer from "@/reducers/watchlistReducer";
 import { MovieType } from "@/types/Movie";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useReducer, useState } from "react";
 import { SafeAreaView, ScrollView, StatusBar } from "react-native";
 
 const TMDB_AUTH_TOKEN =
@@ -17,8 +18,21 @@ const SEARCH_API_URL =
 export default function Index() {
 	const [searchValue, setSearchValue] = useState("");
 	const [searchResults, setSearchResults] = useState<MovieType[]>([]);
-	const [watchList, setWatchList] = useState<MovieType[]>([]);
+	const [watchlist, dispatch] = useReducer(watchlistReducer, []);
 
+	function handleAddMovie(movie: MovieType) {
+		dispatch({
+			type: "added",
+			movie: movie,
+		});
+	}
+
+	function handleDeleteMovie(id: number) {
+		dispatch({
+			type: "deleted",
+			movieID: id,
+		});
+	}
 	/**
 	 * Calls the TMDB API to search for movies matching the query
 	 * Updates the searchResults state with the first 5 results
@@ -65,13 +79,13 @@ export default function Index() {
 	 */
 	const addToWatchlist = useCallback(
 		(movie: MovieType) => {
-			if (!watchList.some((m) => m.id === movie.id)) {
-				setWatchList([...watchList, movie]);
+			if (!watchlist.some((m) => m.id === movie.id)) {
+				handleAddMovie(movie);
 			}
 			setSearchValue("");
 			setSearchResults([]);
 		},
-		[watchList]
+		[watchlist]
 	);
 
 	const renderedSearchResults = useMemo(
@@ -92,20 +106,20 @@ export default function Index() {
 
 	const renderedWatchlist = useMemo(
 		() =>
-			watchList.map((movie, index) => (
+			watchlist.map((movie, index) => (
 				<MovieBox key={`${movie.id}/${index}/watchList`} movie={movie}>
 					<Button
 						size="md"
 						className="my-auto ml-3 bg-red-600"
 						onPress={() => {
-							setWatchList(watchList.filter((m) => m.id !== movie.id));
+							handleDeleteMovie(movie.id);
 						}}
 					>
 						<ButtonIcon as={CloseCircleIcon} />
 					</Button>
 				</MovieBox>
 			)),
-		[watchList]
+		[watchlist]
 	);
 
 	return (
@@ -119,7 +133,7 @@ export default function Index() {
 					clearBtnVisible={searchResults.length != 0}
 					onClear={clearSearch}
 				/>
-				{searchResults.length == 0 && watchList.length == 0 && (
+				{searchResults.length == 0 && watchlist.length == 0 && (
 					<Text className="m-auto">Search to add movies</Text>
 				)}
 				{/* If no searchResults display watchlist */}
