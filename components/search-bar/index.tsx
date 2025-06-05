@@ -35,6 +35,7 @@ export default function SearchBar({
 					<InputIcon as={SearchIcon} />
 				</InputSlot>
 				<InputField
+					autoFocus={false}
 					placeholder={placeholder}
 					value={value}
 					onChangeText={onChangeText}

@@ -1,132 +1,84 @@
-import MovieBox from "@/components/movieBox";
+import MovieCard from "@/components/movieCard";
 import SearchBar from "@/components/search-bar";
-import { Button, ButtonIcon } from "@/components/ui/button";
-import { AddIcon, CloseCircleIcon } from "@/components/ui/icon";
 import { Text } from "@/components/ui/text";
-import { VStack } from "@/components/ui/vstack";
-import watchlistReducer from "@/reducers/watchlistReducer";
 import { fetchMovies } from "@/services/api";
-import { MovieType } from "@/types/Movie";
-import React, { useCallback, useMemo, useReducer, useState } from "react";
-import { SafeAreaView, ScrollView, StatusBar } from "react-native";
-
+import useFetch from "@/services/useFetch";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, SafeAreaView, View } from "react-native";
 export default function Search() {
-	const [searchValue, setSearchValue] = useState("");
-	const [searchResults, setSearchResults] = useState<MovieType[]>([]);
-	const [watchlist, dispatch] = useReducer(watchlistReducer, []);
+	const [searchQuery, setSearchQuery] = useState("");
+	const {
+		data: movies,
+		loading: moviesLoading,
+		error: moviesError,
+		refetch: loadMovies,
+		reset,
+	} = useFetch(() => fetchMovies({ query: searchQuery }), false);
 
-	function handleAddMovie(movie: MovieType) {
-		dispatch({
-			type: "added",
-			movie: movie,
-		});
-	}
-
-	function handleDeleteMovie(id: number) {
-		dispatch({
-			type: "deleted",
-			movieID: id,
-		});
-	}
-
-	/**
-	 * Calls the TMDB API to search for movies matching the query
-	 * Updates the searchResults state with the first 5 results
-	 * Also updates visibility states for UI elements
-	 * @param query - The search string entered by the user
-	 */
-	const searchFor = async (query: string) => {
-		const results = await fetchMovies({ query });
-		const firstFiveResults = results.slice(0, 5).map((movie: MovieType) => ({
-			id: movie.id,
-			title: movie.title,
-			poster_path: movie.poster_path,
-			release_date: movie.release_date,
-		}));
-		setSearchResults(firstFiveResults);
-	};
-
-	/**
-	 * Clears the search input and results, makes the watchlist visible again
-	 */
-	const clearSearch = useCallback(() => {
-		setSearchResults([]);
-		setSearchValue("");
-	}, []);
-
-	/**
-	 * Adds a movie to the watchlist and resets UI states related to search
-	 * @param movie - MovieType object to add to the watchlist
-	 */
-	const addToWatchlist = useCallback(
-		(movie: MovieType) => {
-			if (!watchlist.some((m) => m.id === movie.id)) {
-				handleAddMovie(movie);
+	useEffect(() => {
+		const timeoutID = setTimeout(async () => {
+			if (searchQuery.trim()) {
+				await loadMovies();
+			} else {
+				reset();
 			}
-			setSearchValue("");
-			setSearchResults([]);
-		},
-		[watchlist]
-	);
-
-	const renderedSearchResults = useMemo(
-		() =>
-			searchResults.map((movie, index) => (
-				<MovieBox key={`${movie.id}/${index}/search`} movie={movie}>
-					<Button
-						size="md"
-						className="my-auto ml-3"
-						onPress={() => addToWatchlist(movie)}
-					>
-						<ButtonIcon as={AddIcon} />
-					</Button>
-				</MovieBox>
-			)),
-		[searchResults]
-	);
-
-	const renderedWatchlist = useMemo(
-		() =>
-			watchlist.map((movie, index) => (
-				<MovieBox key={`${movie.id}/${index}/watchList`} movie={movie}>
-					<Button
-						size="md"
-						className="my-auto ml-3 bg-red-600"
-						onPress={() => {
-							handleDeleteMovie(movie.id);
-						}}
-					>
-						<ButtonIcon as={CloseCircleIcon} />
-					</Button>
-				</MovieBox>
-			)),
-		[watchlist]
-	);
+		}, 500);
+		return () => clearTimeout(timeoutID);
+	}, [searchQuery]);
 
 	return (
-		<SafeAreaView>
-			<ScrollView contentContainerClassName="flex-grow h-full px-3">
-				{/* Search input with clear button */}
-				<SearchBar
-					value={searchValue}
-					placeholder="Search for a movie"
-					onChangeText={setSearchValue}
-					onSubmitEditing={(e) => searchFor(e.nativeEvent.text)}
-					clearBtnVisible={searchResults.length != 0}
-					onClear={clearSearch}
-				/>
-				{searchResults.length == 0 && watchlist.length == 0 && (
-					<Text className="m-auto font-bold text-xl">Search to add movies</Text>
-				)}
-				{/* If no searchResults display watchlist */}
-				<VStack space="md">
-					{searchResults.length == 0
-						? renderedWatchlist
-						: renderedSearchResults}
-				</VStack>
-				{/* Sets the status bar style */}
-				<StatusBar barStyle="dark-content" />
-			</ScrollView>
+		<SafeAreaView className="flex-1">
+			<FlatList
+				data={movies}
+				renderItem={({ item }) => <MovieCard {...item} />}
+				keyExtractor={(item) => item.id}
+				className="px-3"
+				columnWrapperStyle={{
+					justifyContent: "flex-start",
+					gap: 20,
+					paddingRight: 5,
+					marginBottom: 10,
+				}}
+				numColumns={3}
+				ListHeaderComponent={
+					<>
+						<View className="w-full flex-row justify-center items-center">
+							<SearchBar
+								value={searchQuery}
+								placeholder="Search movies..."
+								onChangeText={setSearchQuery}
+							/>
+						</View>
+						{moviesLoading && (
+							<ActivityIndicator size="large" className="my-3" />
+						)}
+						{moviesError && (
+							<Text className="text-red-500 px-5 my-3">
+								Error: {moviesError.message}
+							</Text>
+						)}
+						{!moviesLoading &&
+							!moviesError &&
+							searchQuery.trim() &&
+							movies?.length > 0 && (
+								<Text className="text-lg font-bold">
+									Search results for "<Text className="">{searchQuery}</Text>"
+								</Text>
+							)}
+					</>
+				}
+				ListHeaderComponentClassName="bg-[#f2f2f2]"
+				stickyHeaderIndices={[0]}
+				ListEmptyComponent={
+					!moviesLoading && !moviesError ? (
+						<View>
+							<Text className="text-center">
+								{searchQuery.trim() ? "No movies found" : "Search for a movie"}
+							</Text>
+						</View>
+					) : null
+				}
+			/>
 		</SafeAreaView>
 	);
 }
