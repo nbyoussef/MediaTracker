@@ -1,5 +1,5 @@
 import MovieCard from "@/components/movieCard";
-import SearchBar from "@/components/search-bar";
+import SearchBar from "@/components/searchBar";
 import { Text } from "@/components/ui/text";
 import { fetchMovies } from "@/services/api";
 import { updateSearchCount } from "@/services/appwrite";
@@ -20,15 +20,18 @@ export default function Search() {
 		const timeoutID = setTimeout(async () => {
 			if (searchQuery.trim()) {
 				await loadMovies();
-				if (movies?.length > 0 && movies?.[0]) {
-					await updateSearchCount(searchQuery, movies[0]);
-				}
 			} else {
 				reset();
 			}
 		}, 500);
 		return () => clearTimeout(timeoutID);
 	}, [searchQuery]);
+
+	useEffect(() => {
+		if (movies?.length > 0 && movies?.[0]) {
+			updateSearchCount(searchQuery, movies[0]);
+		}
+	}, [movies]);
 
 	return (
 		<SafeAreaView className="flex-1">

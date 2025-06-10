@@ -1,4 +1,5 @@
-import { MovieType } from "@/types/Movie";
+import { Movie } from "@/types/Movie";
+import { MovieDocument } from "@/types/MovieDocument";
 import { Client, Databases, ID, Query } from "react-native-appwrite";
 
 const DATABASE_ID = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
@@ -10,7 +11,7 @@ const client = new Client()
 
 const database = new Databases(client);
 
-export const updateSearchCount = async (query: string, movie: MovieType) => {
+export const updateSearchCount = async (query: string, movie: Movie) => {
 	try {
 		const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
 			Query.equal("searchTerm", query),
@@ -30,7 +31,7 @@ export const updateSearchCount = async (query: string, movie: MovieType) => {
 		} else {
 			await database.createDocument(DATABASE_ID, COLLECTION_ID, ID.unique(), {
 				searchTerm: query,
-				movie_id: movie.id,
+				id: movie.id,
 				title: movie.title,
 				count: 1,
 				poster_url: `https://image.tmdb.org/t/p/w500${movie.poster_path}`,
@@ -42,13 +43,15 @@ export const updateSearchCount = async (query: string, movie: MovieType) => {
 	}
 };
 
-export const getTrendingMovies = async (): Promise<MovieType[] | undefined> => {
+export const getTrendingMovies = async (): Promise<
+	MovieDocument[] | undefined
+> => {
 	try {
 		const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
 			Query.limit(5),
 			Query.orderDesc("count"),
 		]);
-		return result.documents as unknown as MovieType[];
+		return result.documents as unknown as MovieDocument[];
 	} catch (error) {
 		console.log(error);
 		return undefined;

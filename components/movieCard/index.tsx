@@ -1,4 +1,4 @@
-import { MovieType } from "@/types/Movie";
+import { Movie } from "@/types/Movie";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Link } from "expo-router";
 import React from "react";
@@ -12,7 +12,7 @@ export default function MovieCard({
 	title,
 	vote_average,
 	release_date,
-}: MovieType) {
+}: Movie) {
 	return (
 		<Link href={`/movies/${id}`} asChild>
 			<TouchableOpacity className="w-[30%]">
