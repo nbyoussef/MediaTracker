@@ -54,7 +54,6 @@ export default function Index() {
 									renderItem={({ item, index }) => (
 										<TrendingCard movie={item} index={index} />
 									)}
-									scrollEnabled={false}
 									keyExtractor={(item, index) =>
 										item.id.toString() + index.toString()
 									}
