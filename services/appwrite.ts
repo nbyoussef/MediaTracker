@@ -43,9 +43,7 @@ export const updateSearchCount = async (query: string, movie: Movie) => {
 	}
 };
 
-export const getTrendingMovies = async (): Promise<
-	MovieDocument[] | undefined
-> => {
+export const getTrendingMovies = async (): Promise<MovieDocument[]> => {
 	try {
 		const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
 			Query.limit(5),
@@ -54,6 +52,6 @@ export const getTrendingMovies = async (): Promise<
 		return result.documents as unknown as MovieDocument[];
 	} catch (error) {
 		console.log(error);
-		return undefined;
+		return [];
 	}
 };

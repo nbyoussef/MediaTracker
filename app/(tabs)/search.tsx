@@ -28,7 +28,7 @@ export default function Search() {
 	}, [searchQuery]);
 
 	useEffect(() => {
-		if (movies?.length > 0 && movies?.[0]) {
+		if (movies && movies.length > 0 && movies[0]) {
 			updateSearchCount(searchQuery, movies[0]);
 		}
 	}, [movies]);
@@ -38,7 +38,7 @@ export default function Search() {
 			<FlatList
 				data={movies}
 				renderItem={({ item }) => <MovieCard {...item} />}
-				keyExtractor={(item) => item.id}
+				keyExtractor={(item) => item.id.toString()}
 				className="px-3"
 				columnWrapperStyle={{
 					justifyContent: "flex-start",
@@ -67,7 +67,8 @@ export default function Search() {
 						{!moviesLoading &&
 							!moviesError &&
 							searchQuery.trim() &&
-							movies?.length > 0 && (
+							movies &&
+							movies.length > 0 && (
 								<Text className="text-lg font-bold">
 									Search results for "<Text className="">{searchQuery}</Text>"
 								</Text>
