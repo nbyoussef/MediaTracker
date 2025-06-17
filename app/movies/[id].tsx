@@ -70,7 +70,19 @@ const MovieDetails = () => {
 					</View>
 
 					<Text className="text-lg font-semibold mb-2">Overview</Text>
-					<Text className="text-gray-700">{movie.overview}</Text>
+					<Text className="text-gray-700 mb-4">{movie.overview}</Text>
+
+					<Text className="text-lg font-semibold mb-2">Genres</Text>
+					<View className="flex-row flex-wrap gap-2">
+						{movie.genres.map((genre) => (
+							<View
+								key={genre.id}
+								className="bg-secondary-500 px-2 py-1 rounded-md gap-x-1"
+							>
+								<Text className="text-gray-600">{genre.name}</Text>
+							</View>
+						))}
+					</View>
 				</View>
 			</ScrollView>
 		</SafeAreaView>

@@ -1,4 +1,10 @@
+export interface Genre {
+	id: number;
+	name: string;
+}
+
 export interface Movie {
+	genres: Genre[];
 	vote_count: number;
 	title: string;
 	poster_path: string;
