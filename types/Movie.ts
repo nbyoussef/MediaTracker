@@ -1,4 +1,5 @@
 export interface Movie {
+	vote_count: number;
 	title: string;
 	poster_path: string;
 	backdrop_path: string;
@@ -6,4 +7,5 @@ export interface Movie {
 	id: number;
 	vote_average: number;
 	overview: string;
+	runtime: number;
 }

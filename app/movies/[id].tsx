@@ -1,7 +1,7 @@
 import { fetchMovieDetails } from "@/services/api";
 import useFetch from "@/services/useFetch";
 import { Movie } from "@/types/Movie";
-import { Ionicons } from "@expo/vector-icons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import React from "react";
 import { ActivityIndicator, Image, ScrollView, Text, View } from "react-native";
@@ -45,8 +45,8 @@ const MovieDetails = () => {
 						resizeMode="cover"
 					/>
 					<View className="absolute top-4 left-4">
-						<Ionicons
-							name="arrow-back"
+						<FontAwesome
+							name="chevron-left"
 							size={24}
 							color="white"
 							onPress={() => router.back()}
@@ -56,11 +56,17 @@ const MovieDetails = () => {
 
 				<View className="p-4">
 					<Text className="text-2xl font-bold mb-2">{movie.title}</Text>
-					<Text className="text-gray-600 mb-4">{movie.release_date}</Text>
+					<Text className="text-gray-600 mb-4">
+						{movie.release_date.split("-")[0]} • {movie.runtime}m
+					</Text>
 
 					<View className="flex-row items-center mb-4">
 						<Text className="text-lg font-semibold mr-2">Rating:</Text>
-						<Text>{movie.vote_average}/10</Text>
+						<FontAwesome name="star" size={12} color="#DAA520" />
+						<Text className="ml-1">{movie.vote_average}/10</Text>
+						<Text className="text-gray-600 ml-2">
+							({movie.vote_count} votes)
+						</Text>
 					</View>
 
 					<Text className="text-lg font-semibold mb-2">Overview</Text>
